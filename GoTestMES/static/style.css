@@ -1,0 +1,455 @@
+/* 全域樣式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+/* 標題區 */
+header {
+    background: white;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    color: #2d3748;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.connection-status {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-label {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-badge.online {
+    background: #48bb78;
+    color: white;
+}
+
+.status-badge.offline {
+    background: #cbd5e0;
+    color: #4a5568;
+}
+
+/* 主要內容區 */
+.main-content {
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    gap: 20px;
+}
+
+/* 面板 */
+.panel {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.panel h2 {
+    color: #2d3748;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.panel h3 {
+    color: #4a5568;
+    font-size: 16px;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* 表單 */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #4a5568;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* 按鈕 */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-start {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-start:hover {
+    background: #38a169;
+}
+
+.btn-stop {
+    background: #f56565;
+    color: white;
+}
+
+.btn-stop:hover {
+    background: #e53e3e;
+}
+
+.btn-pause {
+    background: #ed8936;
+    color: white;
+}
+
+.btn-pause:hover {
+    background: #dd6b20;
+}
+
+.btn-resume {
+    background: #4299e1;
+    color: white;
+}
+
+.btn-resume:hover {
+    background: #3182ce;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    width: auto;
+    background: #cbd5e0;
+    color: #2d3748;
+}
+
+.btn-small:hover {
+    background: #a0aec0;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* 命令區塊 */
+.command-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.command-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Log 控制台 */
+.log-panel {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.log-console {
+    flex: 1;
+    background: #1a202c;
+    border-radius: 6px;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    color: #e2e8f0;
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.log-time {
+    color: #a0aec0;
+}
+
+.log-source {
+    color: #4299e1;
+    font-weight: 600;
+}
+
+.log-message {
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.log-info .log-message {
+    color: #e2e8f0;
+}
+
+.log-success .log-message {
+    color: #48bb78;
+}
+
+.log-warning .log-message {
+    color: #ed8936;
+}
+
+.log-error .log-message {
+    color: #f56565;
+}
+
+.log-send .log-source {
+    color: #9f7aea;
+}
+
+.log-receive .log-source {
+    color: #38b2ac;
+}
+
+/* 通道表格 */
+.table-container {
+    overflow-x: auto;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+}
+
+th {
+    padding: 12px;
+    text-align: left;
+    background: #f7fafc;
+    color: #2d3748;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+tbody tr:hover {
+    background: #f7fafc;
+}
+
+/* 狀態標籤 */
+.state-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.state-running {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.state-standby {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+.state-paused {
+    background: #feebc8;
+    color: #7c2d12;
+}
+
+.state-alarm {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.state-finish {
+    background: #bee3f8;
+    color: #2c5282;
+}
+
+.state-offline {
+    background: #cbd5e0;
+    color: #1a202c;
+}
+
+.state-default {
+    background: #edf2f7;
+    color: #4a5568;
+}
+
+.message-cell {
+    color: #e53e3e;
+    font-weight: 500;
+}
+
+/* 篩選器 */
+.filter-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.filter-group input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* 響應式設計 */
+@media (max-width: 1400px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 22px;
+    }
+    
+    .connection-status {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .button-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .panel {
+        padding: 15px;
+    }
+}
+
+/* 捲軸樣式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Log 控制台捲軸 */
+.log-console::-webkit-scrollbar-track {
+    background: #2d3748;
+}
+
+.log-console::-webkit-scrollbar-thumb {
+    background: #4a5568;
+}
+
+.log-console::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
