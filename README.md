@@ -58,17 +58,17 @@ go mod tidy
 2. **編譯程式**
 
 ```bash
-go build -o GoTestMES.exe
+go build -o DYMesTest.exe
 ```
 
 3. **執行程式**
 
 ```bash
 # 使用預設設定
-./GoTestMES.exe
+./DYMesTest.exe
 
 # 或指定自訂參數
-./GoTestMES.exe -tcp-port 50200 -http-port 5179 -channels 128
+./DYMesTest.exe -tcp-port 50200 -http-port 5179 -channels 128
 ```
 
 ### 命令列參數
@@ -109,7 +109,7 @@ Web UI: http://localhost:5179
 
 ### 1. 啟動伺服器
 
-執行 `GoTestMES.exe` 後，伺服器會：
+執行 `DYMesTest.exe` 後，伺服器會：
 - 在 Port 50200 監聽 TPT 的 TCP 連線
 - 在 Port 5179 提供 Web GUI 介面
 
@@ -262,7 +262,7 @@ Web UI: http://localhost:5179
 
 **解決方案**:
 1. 確認 Port 5179 未被佔用
-2. 嘗試使用其他埠號：`./GoTestMES.exe -http-port 8081`
+2. 嘗試使用其他埠號：`./DYMesTest.exe -http-port 8081`
 3. 檢查防火牆設定
 
 ### 命令發送失敗
@@ -293,7 +293,7 @@ go run main.go
 
 ```bash
 # Windows
-go build -ldflags="-s -w" -o GoTestMES.exe
+go build -ldflags="-s -w" -o DYMesTest.exe
 
 # Linux
 GOOS=linux GOARCH=amd64 go build -o GoTestMES
@@ -320,6 +320,5 @@ GOOS=darwin GOARCH=amd64 go build -o GoTestMES
 
 ---
 
-**版本**: 1.0.0  
+**版本**: 1.0.1
 **最後更新**: 2025-12-01
-
