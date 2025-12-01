@@ -68,7 +68,7 @@ go build -o GoTestMES.exe
 ./GoTestMES.exe
 
 # 或指定自訂參數
-./GoTestMES.exe -tcp-port 50200 -http-port 8080 -channels 128
+./GoTestMES.exe -tcp-port 50200 -http-port 5179 -channels 128
 ```
 
 ### 命令列參數
@@ -76,7 +76,7 @@ go build -o GoTestMES.exe
 | 參數 | 說明 | 預設值 |
 |------|------|--------|
 | `-tcp-port` | TCP 伺服器埠號 | 50200 |
-| `-http-port` | HTTP/WebSocket 伺服器埠號 | 8080 |
+| `-http-port` | HTTP/WebSocket 伺服器埠號 | 5179 |
 | `-channels` | 通道數量 | 128 |
 
 ### 啟動畫面
@@ -84,25 +84,25 @@ go build -o GoTestMES.exe
 ```
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║     TPT MES 測試伺服器 (GoTestMES)                       ║
+║     TPT_DYMesTest                                         ║
 ║     TPT Automated Testing MES Server                      ║
 ║                                                           ║
-║     Version: 1.0.0                                        ║
-║     Protocol: TCP/IP + JSON (8-byte header)               ║
+║     Version: 1.0.1                                        ║
+║     Protocol: TCP/IP + JSON with \r\n terminator          ║
 ║     Purpose: TPT ThinkLab Communication Testing           ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 
 Starting TPT MES Test Server...
 TCP Port: 50200
-HTTP Port: 8080
+HTTP Port: 5179
 Channel Count: 128
-Web UI: http://localhost:8080
+Web UI: http://localhost:5179
 [TCP] Server listening on port 50200
-[HTTP] Server starting on http://localhost:8080
+[HTTP] Server starting on http://localhost:5179
 ✓ Server started successfully!
 ✓ Waiting for TPT connection on port 50200...
-✓ Open web browser: http://localhost:8080
+✓ Open web browser: http://localhost:5179
 ```
 
 ## 使用方式
@@ -111,11 +111,11 @@ Web UI: http://localhost:8080
 
 執行 `GoTestMES.exe` 後，伺服器會：
 - 在 Port 50200 監聽 TPT 的 TCP 連線
-- 在 Port 8080 提供 Web GUI 介面
+- 在 Port 5179 提供 Web GUI 介面
 
 ### 2. 開啟 Web 介面
 
-在瀏覽器中開啟 `http://localhost:8080`，您會看到：
+在瀏覽器中開啟 `http://localhost:5179`，您會看到：
 
 - **連線狀態區**: 顯示 TCP 連線狀態、TPT 狀態、工作站名稱
 - **控制面板**: 選擇通道並發送命令（START, STOP, PAUSE, RESUME）
@@ -258,10 +258,10 @@ Web UI: http://localhost:8080
 
 ### Web 介面無法開啟
 
-**問題**: 瀏覽器無法開啟 `http://localhost:8080`
+**問題**: 瀏覽器無法開啟 `http://localhost:5179`
 
 **解決方案**:
-1. 確認 Port 8080 未被佔用
+1. 確認 Port 5179 未被佔用
 2. 嘗試使用其他埠號：`./GoTestMES.exe -http-port 8081`
 3. 檢查防火牆設定
 
