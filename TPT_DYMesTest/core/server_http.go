@@ -155,7 +155,11 @@ func (s *HTTPServer) handleGetStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status := s.stateManager.GetConnectionStatus()
-	status["tcp_clients"] = s.tcpServer.GetClientCount()
+	
+	// TCP 連線狀態（純粹的 socket 連接）
+	tcpClientCount := s.tcpServer.GetClientCount()
+	status["tcp_connected"] = tcpClientCount > 0
+	status["tcp_clients"] = tcpClientCount
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(status)

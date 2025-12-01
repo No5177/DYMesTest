@@ -154,7 +154,8 @@ function updateConnectionStatus() {
     const tptStatus = document.getElementById('tpt-status');
     const workstationName = document.getElementById('workstation-name');
     
-    if (connectionStatus.connected) {
+    // TCP 連線狀態（純粹的 socket 連接）
+    if (connectionStatus.tcp_connected) {
         tcpStatus.textContent = '已連線';
         tcpStatus.className = 'status-badge online';
     } else {
@@ -162,7 +163,15 @@ function updateConnectionStatus() {
         tcpStatus.className = 'status-badge offline';
     }
     
-    tptStatus.textContent = connectionStatus.tpt_state || 'N/A';
+    // TPT 狀態（收到 LINK 後才顯示）
+    if (connectionStatus.tpt_connected) {
+        tptStatus.textContent = connectionStatus.tpt_state || 'Online';
+        tptStatus.className = 'status-badge online';
+    } else {
+        tptStatus.textContent = '未連線';
+        tptStatus.className = 'status-badge offline';
+    }
+    
     workstationName.textContent = connectionStatus.work_station_name || 'N/A';
 }
 

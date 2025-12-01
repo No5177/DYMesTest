@@ -8,6 +8,7 @@ echo.
 REM ---------------編譯檔案------------------
 echo [狀態] 正在編譯程式 (go build -o DYMesTest.exe)...
 echo.
+go mod tidy
 go build -o DYMesTest.exe
 
 if errorlevel 1 (

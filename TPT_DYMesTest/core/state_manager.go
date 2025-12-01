@@ -449,7 +449,7 @@ func (sm *StateManager) GetConnectionStatus() map[string]interface{} {
 	defer sm.mu.RUnlock()
 
 	return map[string]interface{}{
-		"connected":         sm.isConnected,
+		"tpt_connected":     sm.isConnected,      // TPT 狀態（收到 LINK 後為 true）
 		"work_station_name": sm.workStationName,
 		"tpt_state":         sm.tptState,
 		"channel_count":     sm.channelCount,

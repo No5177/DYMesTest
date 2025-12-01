@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"sync"
+	"time"
 )
 
 // TCPServer TCP 伺服器
@@ -66,11 +68,19 @@ func (s *TCPServer) acceptConnections() {
 			}
 		}
 
-		log.Printf("[TCP] New connection from %s", conn.RemoteAddr())
+		log.Printf("[TCP] ==========================================")
+		log.Printf("[TCP] ✓ New connection accepted!")
+		log.Printf("[TCP]   Remote address: %s", conn.RemoteAddr())
+		log.Printf("[TCP]   Local address:  %s", conn.LocalAddr())
+		log.Printf("[TCP]   Connection type: %T", conn)
+		log.Printf("[TCP] ==========================================")
 
 		s.clientsMu.Lock()
 		s.clients[conn] = true
+		clientCount := len(s.clients)
 		s.clientsMu.Unlock()
+
+		log.Printf("[TCP] Total active connections: %d", clientCount)
 
 		go s.handleConnection(conn)
 	}
@@ -86,27 +96,61 @@ func (s *TCPServer) handleConnection(conn net.Conn) {
 		log.Printf("[TCP] Connection closed: %s", conn.RemoteAddr())
 	}()
 
+	// 啟用 TCP Keep-Alive（每 30 秒發送一次 keep-alive 封包）
+	if tcpConn, ok := conn.(*net.TCPConn); ok {
+		tcpConn.SetKeepAlive(true)
+		tcpConn.SetKeepAlivePeriod(30 * time.Second)
+		log.Printf("[TCP] ✓ TCP Keep-Alive enabled (30s interval)")
+	}
+
 	// 建立 bufio.Reader 用於讀取訊息
 	reader := bufio.NewReader(conn)
 
+	log.Printf("[TCP] ========================================")
+	log.Printf("[TCP] Connection established from %s", conn.RemoteAddr())
+	log.Printf("[TCP] Local address: %s", conn.LocalAddr())
+	log.Printf("[TCP] Reader created, buffer size: %d", reader.Size())
+	log.Printf("[TCP] ========================================")
+	os.Stdout.Sync() // 強制輸出 log
+
+	messageCount := 0
 	for {
-		// 讀取訊息
+		messageCount++
+		log.Printf("[TCP] ========== Message #%d ==========", messageCount)
+		log.Printf("[TCP] >>> Calling ReadMessage()...")
+		os.Stdout.Sync() // 強制輸出 log
+
+		// 不設定讀取超時，讓連線保持開啟
+		// TCP Keep-Alive 會自動檢測連線是否斷開
+		// conn.SetReadDeadline(time.Now().Add(30 * time.Second))
+
+		// 讀取訊息（這會阻塞直到收到資料或超時）
 		jsonData, err := ReadMessage(reader)
+
+		log.Printf("[TCP] <<< ReadMessage() returned")
+		os.Stdout.Sync() // 強制輸出 log
+
 		if err != nil {
-			log.Printf("[TCP] Read error from %s: %v", conn.RemoteAddr(), err)
+			log.Printf("[TCP] ❌ Read error from %s: %v", conn.RemoteAddr(), err)
+			os.Stdout.Sync()
+			// 任何讀取錯誤都表示連線有問題，關閉連線
 			return
 		}
 
-		// 記錄收到的訊息
-		log.Printf("[TCP] Received from %s: %s", conn.RemoteAddr(), string(jsonData))
+		// 記錄收到的訊息（完整內容）
+		log.Printf("[TCP] ✓ Received %d bytes from %s", len(jsonData), conn.RemoteAddr())
+		log.Printf("[TCP] Raw data: %s", string(jsonData))
 
 		// 處理訊息
 		response, err := s.stateManager.HandleMessage(jsonData)
 		if err != nil {
-			log.Printf("[TCP] Handle message error: %v", err)
+			log.Printf("[TCP] ❌ Handle message error: %v", err)
+			log.Printf("[TCP] Failed message content: %s", string(jsonData))
 			// 即使處理失敗，也不中斷連線
 			continue
 		}
+
+		log.Printf("[TCP] ✓ Message handled successfully")
 
 		// 發送回覆
 		if response != nil {
@@ -178,4 +222,3 @@ func (s *TCPServer) GetClientCount() int {
 	defer s.clientsMu.RUnlock()
 	return len(s.clients)
 }
-
