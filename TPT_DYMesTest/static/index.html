@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPT MES 測試伺服器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 標題區 -->
+        <header>
+            <h1>🔧 TPT MES 測試伺服器</h1>
+            <div class="connection-status">
+                <div class="status-item">
+                    <span class="status-label">TCP 連線:</span>
+                    <span id="tcp-status" class="status-badge offline">離線</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">TPT 狀態:</span>
+                    <span id="tpt-status" class="status-badge">N/A</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">工作站:</span>
+                    <span id="workstation-name">N/A</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要內容區 -->
+        <div class="main-content">
+            <!-- 左側：控制面板 -->
+            <div class="left-panel">
+                <div class="panel">
+                    <h2>📋 控制面板</h2>
+                    
+                    <!-- 通道選擇 -->
+                    <div class="form-group">
+                        <label for="channel-select">選擇通道:</label>
+                        <select id="channel-select">
+                            <option value="">-- 請選擇通道 --</option>
+                        </select>
+                    </div>
+
+                    <!-- START 命令區 -->
+                    <div class="command-section">
+                        <h3>START 命令</h3>
+                        <div class="form-group">
+                            <label for="barcode-input">條碼 (Barcode):</label>
+                            <input type="text" id="barcode-input" placeholder="例如: A1234578900BE">
+                        </div>
+                        <div class="form-group">
+                            <label for="process-input">製程 (Process):</label>
+                            <input type="text" id="process-input" placeholder="例如: TEST-20251201-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="datapath-input">資料路徑 (Data Path):</label>
+                            <input type="text" id="datapath-input" placeholder="例如: C:\\ThinkLab4\\record" value="C:\\ThinkLab4\\record">
+                        </div>
+                        <button id="btn-start" class="btn btn-start">▶ START</button>
+                    </div>
+
+                    <!-- 其他命令按鈕 -->
+                    <div class="command-section">
+                        <h3>其他命令</h3>
+                        <div class="button-group">
+                            <button id="btn-stop" class="btn btn-stop">⏹ STOP</button>
+                            <button id="btn-pause" class="btn btn-pause">⏸ PAUSE</button>
+                            <button id="btn-resume" class="btn btn-resume">⏯ RESUME</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Log 控制台 -->
+                <div class="panel log-panel">
+                    <div class="panel-header">
+                        <h2>📝 通訊 Log</h2>
+                        <button id="btn-clear-log" class="btn btn-small">清除</button>
+                    </div>
+                    <div id="log-console" class="log-console"></div>
+                </div>
+            </div>
+
+            <!-- 右側：通道監控表 -->
+            <div class="right-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📊 通道狀態監控</h2>
+                        <div class="filter-group">
+                            <label>
+                                <input type="checkbox" id="filter-running" checked>
+                                <span class="state-badge state-running">Running</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-standby" checked>
+                                <span class="state-badge state-standby">StandBy</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-alarm" checked>
+                                <span class="state-badge state-alarm">Alarm</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-offline" checked>
+                                <span class="state-badge state-offline">OffLine</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="channel-table">
+                            <thead>
+                                <tr>
+                                    <th>通道</th>
+                                    <th>狀態</th>
+                                    <th>條碼</th>
+                                    <th>製程</th>
+                                    <th>訊息</th>
+                                </tr>
+                            </thead>
+                            <tbody id="channel-tbody">
+                                <!-- 動態生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
