@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
-
+	"io/fs"
 	"github.com/gorilla/websocket"
 )
 
@@ -15,6 +15,7 @@ type HTTPServer struct {
 	port         int
 	stateManager *StateManager
 	tcpServer    *TCPServer
+	staticFS     fs.FS 
 	upgrader     websocket.Upgrader
 	wsClients    map[*websocket.Conn]bool
 	wsClientsMu  sync.RWMutex
@@ -22,24 +23,20 @@ type HTTPServer struct {
 }
 
 // NewHTTPServer 建立新的 HTTP 伺服器
-func NewHTTPServer(port int, stateManager *StateManager, tcpServer *TCPServer) *HTTPServer {
+func NewHTTPServer(port int, stateManager *StateManager, tcpServer *TCPServer, staticFS fs.FS) *HTTPServer {
 	server := &HTTPServer{
 		port:         port,
 		stateManager: stateManager,
 		tcpServer:    tcpServer,
+		staticFS:     staticFS, // 儲存傳入的檔案系統
 		upgrader: websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool {
-				return true // 允許所有來源（開發用）
-			},
+			CheckOrigin: func(r *http.Request) bool { return true },
 		},
 		wsClients: make(map[*websocket.Conn]bool),
 		broadcast: make(chan interface{}, 100),
 	}
 
-	// 設定 StateManager 的廣播函數
 	stateManager.SetBroadcastFunc(server.BroadcastToWebSocket)
-
-	// 啟動廣播 goroutine
 	go server.handleBroadcast()
 
 	return server
@@ -47,13 +44,11 @@ func NewHTTPServer(port int, stateManager *StateManager, tcpServer *TCPServer) *
 
 // Start 啟動 HTTP 伺服器
 func (s *HTTPServer) Start() error {
-	// 靜態檔案服務
-	http.Handle("/", http.FileServer(http.Dir("./static")))
+	// 3. 修改：直接使用傳入的 staticFS
+	// 這裡不需要 fs.Sub，因為 main.go 已經處理好了
+	http.Handle("/", http.FileServer(http.FS(s.staticFS)))
 
-	// WebSocket 端點
 	http.HandleFunc("/ws", s.handleWebSocket)
-
-	// API 端點
 	http.HandleFunc("/api/status", s.handleGetStatus)
 	http.HandleFunc("/api/channels", s.handleGetChannels)
 	http.HandleFunc("/api/cmd/start", s.handleStartCommand)
@@ -66,7 +61,8 @@ func (s *HTTPServer) Start() error {
 
 	go func() {
 		if err := http.ListenAndServe(addr, nil); err != nil {
-			log.Fatalf("[HTTP] Server error: %v", err)
+			// 使用 Printf 避免 Port 佔用時直接閃退
+			log.Printf("[HTTP] ❌ Server Start Error (Check if port %d is used): %v", s.port, err)
 		}
 	}()
 

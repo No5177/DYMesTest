@@ -223,9 +223,10 @@ type ReportAckMessage struct {
 
 // GetTimestamp 取得當前時間戳記（ISO 8601 格式）
 func GetTimestamp() string {
-	// 使用台北時區 (UTC+8)
-	loc, _ := time.LoadLocation("Asia/Taipei")
-	return time.Now().In(loc).Format("2006-01-02T15:04:05+08:00")
+    // FixedZone("時區名稱", 偏移秒數) -> 8小時 * 60分 * 60秒 = 28800
+    loc := time.FixedZone("Asia/Taipei", 8*60*60)
+    
+    return time.Now().In(loc).Format("2006-01-02T15:04:05+08:00")
 }
 
 // GenerateMsgID 產生訊息 ID (16 碼 HEX)

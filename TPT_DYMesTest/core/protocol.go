@@ -42,22 +42,16 @@ func ReadMessage(reader io.Reader) ([]byte, error) {
 		for {
 			b, err := bufReader.ReadByte()
 			if err != nil {
-				// 如果是 EOF 或其他讀取錯誤，直接返回
-				log.Printf("[Protocol] ❌ Read error: %v", err)
-				os.Stdout.Sync()
 				return nil, fmt.Errorf("failed to read byte: %w", err)
 			}
-
 			lineBytes = append(lineBytes, b)
 
 			// 檢查是否已收到完整的 \r\n 結束符號 (0x0D 0x0A)
 			if len(lineBytes) >= 2 &&
-				lineBytes[len(lineBytes)-2] == 0x0D && // \r (Carriage Return)
-				lineBytes[len(lineBytes)-1] == 0x0A { // \n (Line Feed)
-				log.Printf("[Protocol] ✓ Found \\r\\n terminator (0x0D 0x0A)!")
-				os.Stdout.Sync()
-				break
-			}
+            lineBytes[len(lineBytes)-2] == 0x0D && 
+            lineBytes[len(lineBytes)-1] == 0x0A {
+            break // 找到結尾，跳出迴圈
+        	}
 
 			// 防止無限讀取（最大 10MB）
 			if len(lineBytes) > 10*1024*1024 {
@@ -69,7 +63,7 @@ func ReadMessage(reader io.Reader) ([]byte, error) {
 
 		log.Printf("[Protocol] <<< Complete message received!")
 		log.Printf("[Protocol] ✓ Received %d bytes (including terminator)", len(lineBytes))
-		os.Stdout.Sync()
+		
 
 		// 記錄原始資料（Hex dump 前 100 bytes）
 		dumpLen := min(100, len(lineBytes))

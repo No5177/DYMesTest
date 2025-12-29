@@ -308,14 +308,9 @@ func (sm *StateManager) ValidateAndSendStop(channelID string) error {
 		return fmt.Errorf("TPT is not connected")
 	}
 
-	ch, exists := sm.channels[channelID]
+	_, exists := sm.channels[channelID]
 	if !exists {
 		return fmt.Errorf("channel %s does not exist", channelID)
-	}
-
-	// Level 3 邏輯：只有 Running 或 Paused 狀態可以停止
-	if ch.State != models.StateRunning && ch.State != models.StatePaused {
-		return fmt.Errorf("channel %s is not running (current state: %s)", channelID, ch.State)
 	}
 
 	stopCmd := models.StopMessage{
@@ -351,14 +346,9 @@ func (sm *StateManager) ValidateAndSendPause(channelID string) error {
 		return fmt.Errorf("TPT is not connected")
 	}
 
-	ch, exists := sm.channels[channelID]
+	_, exists := sm.channels[channelID]
 	if !exists {
 		return fmt.Errorf("channel %s does not exist", channelID)
-	}
-
-	// 只有 Running 狀態可以暫停
-	if ch.State != models.StateRunning {
-		return fmt.Errorf("channel %s is not running (current state: %s)", channelID, ch.State)
 	}
 
 	pauseCmd := models.PauseMessage{
@@ -394,14 +384,9 @@ func (sm *StateManager) ValidateAndSendResume(channelID string) error {
 		return fmt.Errorf("TPT is not connected")
 	}
 
-	ch, exists := sm.channels[channelID]
+	_, exists := sm.channels[channelID]
 	if !exists {
 		return fmt.Errorf("channel %s does not exist", channelID)
-	}
-
-	// 只有 Paused 狀態可以復歸
-	if ch.State != models.StatePaused {
-		return fmt.Errorf("channel %s is not paused (current state: %s)", channelID, ch.State)
 	}
 
 	resumeCmd := models.ResumeMessage{
