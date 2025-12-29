@@ -3,10 +3,11 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"sync"
-	"io/fs"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -15,7 +16,7 @@ type HTTPServer struct {
 	port         int
 	stateManager *StateManager
 	tcpServer    *TCPServer
-	staticFS     fs.FS 
+	staticFS     fs.FS
 	upgrader     websocket.Upgrader
 	wsClients    map[*websocket.Conn]bool
 	wsClientsMu  sync.RWMutex
@@ -55,6 +56,8 @@ func (s *HTTPServer) Start() error {
 	http.HandleFunc("/api/cmd/stop", s.handleStopCommand)
 	http.HandleFunc("/api/cmd/pause", s.handlePauseCommand)
 	http.HandleFunc("/api/cmd/resume", s.handleResumeCommand)
+	http.HandleFunc("/api/cmd/rsp_status", s.handleRspStatusCommand)
+	http.HandleFunc("/api/cmd/user_command", s.handleUserCommand)
 
 	addr := fmt.Sprintf(":%d", s.port)
 	log.Printf("[HTTP] Server starting on http://localhost%s", addr)
@@ -151,7 +154,7 @@ func (s *HTTPServer) handleGetStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status := s.stateManager.GetConnectionStatus()
-	
+
 	// TCP 連線狀態（純粹的 socket 連接）
 	tcpClientCount := s.tcpServer.GetClientCount()
 	status["tcp_connected"] = tcpClientCount > 0
@@ -320,3 +323,64 @@ func (s *HTTPServer) handleResumeCommand(w http.ResponseWriter, r *http.Request)
 	})
 }
 
+// handleRspStatusCommand 處理 RSP_STATUS 命令
+func (s *HTTPServer) handleRspStatusCommand(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := s.stateManager.SendRspStatus()
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "ok",
+	})
+}
+
+// UserCommandRequest 自訂命令請求結構
+type UserCommandRequest struct {
+	Type string `json:"type"`
+}
+
+// handleUserCommand 處理自訂命令
+func (s *HTTPServer) handleUserCommand(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req UserCommandRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.Type == "" {
+		http.Error(w, "Missing type field", http.StatusBadRequest)
+		return
+	}
+
+	err := s.stateManager.SendUserCommand(req.Type)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "ok",
+	})
+}

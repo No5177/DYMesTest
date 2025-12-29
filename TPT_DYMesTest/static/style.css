@@ -195,6 +195,24 @@ header h1 {
     background: #3182ce;
 }
 
+.btn-info {
+    background: #9f7aea;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #805ad5;
+}
+
+.btn-custom {
+    background: #38b2ac;
+    color: white;
+}
+
+.btn-custom:hover {
+    background: #319795;
+}
+
 .btn-small {
     padding: 6px 12px;
     font-size: 12px;

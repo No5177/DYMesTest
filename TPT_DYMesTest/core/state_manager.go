@@ -434,9 +434,78 @@ func (sm *StateManager) GetConnectionStatus() map[string]interface{} {
 	defer sm.mu.RUnlock()
 
 	return map[string]interface{}{
-		"tpt_connected":     sm.isConnected,      // TPT 狀態（收到 LINK 後為 true）
+		"tpt_connected":     sm.isConnected, // TPT 狀態（收到 LINK 後為 true）
 		"work_station_name": sm.workStationName,
 		"tpt_state":         sm.tptState,
 		"channel_count":     sm.channelCount,
 	}
+}
+
+// SendRspStatus 發送 RSP_STATUS 命令
+func (sm *StateManager) SendRspStatus() error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+
+	if !sm.isConnected {
+		return fmt.Errorf("TPT is not connected")
+	}
+
+	// 建立 RSP_STATUS 命令
+	rspStatusCmd := map[string]interface{}{
+		"type":              "RSP_STATUS",
+		"timestamp":         models.GetTimestamp(),
+		"msg_id":            models.GenerateMsgID(),
+		"work_station_name": sm.workStationName,
+	}
+
+	// 發送到 TPT
+	if sm.sendToTPTFunc != nil {
+		if err := sm.sendToTPTFunc(rspStatusCmd); err != nil {
+			return fmt.Errorf("failed to send RSP_STATUS command: %w", err)
+		}
+	}
+
+	log.Printf("[RSP_STATUS] Sent to TPT")
+
+	// 廣播到前端
+	sm.broadcast(map[string]interface{}{
+		"direction": "MES->TPT",
+		"data":      rspStatusCmd,
+	})
+
+	return nil
+}
+
+// SendUserCommand 發送自訂命令
+func (sm *StateManager) SendUserCommand(commandType string) error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+
+	if !sm.isConnected {
+		return fmt.Errorf("TPT is not connected")
+	}
+
+	// 建立自訂命令
+	userCmd := map[string]interface{}{
+		"type":      commandType,
+		"timestamp": models.GetTimestamp(),
+		"msg_id":    models.GenerateMsgID(),
+	}
+
+	// 發送到 TPT
+	if sm.sendToTPTFunc != nil {
+		if err := sm.sendToTPTFunc(userCmd); err != nil {
+			return fmt.Errorf("failed to send user command: %w", err)
+		}
+	}
+
+	log.Printf("[USER_COMMAND] Sent command with type: %s", commandType)
+
+	// 廣播到前端
+	sm.broadcast(map[string]interface{}{
+		"direction": "MES->TPT",
+		"data":      userCmd,
+	})
+
+	return nil
 }

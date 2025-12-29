@@ -2,16 +2,15 @@ package main
 
 import (
 	"GoTestMES/core"
-	"embed" 
+	"embed"
 	"flag"
 	"fmt"
-	"io/fs" 
+	"io/fs"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
-
 
 //go:embed static
 var staticEmbed embed.FS
@@ -31,7 +30,6 @@ func main() {
 	printBanner()
 	log.Printf("Starting TPT MES Test Server...")
 
-	
 	staticFS, err := fs.Sub(staticEmbed, "static")
 	if err != nil {
 		log.Fatalf("Failed to load static files: %v", err)
@@ -43,7 +41,6 @@ func main() {
 		log.Fatalf("Failed to start TCP server: %v", err)
 	}
 
-	
 	httpServer := core.NewHTTPServer(*httpPort, stateManager, tcpServer, staticFS)
 	if err := httpServer.Start(); err != nil {
 		log.Fatalf("Failed to start HTTP server: %v", err)
@@ -68,7 +65,7 @@ func printBanner() {
 ║     TPT_DYMesTest                                         ║
 ║     TPT Automated Testing MES Server                      ║
 ║                                                           ║
-║     Version: 1.0.2                                        ║
+║     Version: 1.0.3                                        ║
 ║     Protocol: TCP/IP + JSON with \r\n terminator          ║
 ║     Purpose: TPT ThinkLab Communication Testing           ║
 ║                                                           ║

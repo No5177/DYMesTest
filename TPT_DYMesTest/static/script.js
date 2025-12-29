@@ -97,6 +97,12 @@ function initEventListeners() {
     // RESUME 按鈕
     document.getElementById('btn-resume').addEventListener('click', sendResumeCommand);
     
+    // RSP_STATUS 按鈕
+    document.getElementById('btn-rsp-status').addEventListener('click', sendRspStatusCommand);
+    
+    // 自訂命令按鈕
+    document.getElementById('btn-user-command').addEventListener('click', sendUserCommand);
+    
     // 清除 Log 按鈕
     document.getElementById('btn-clear-log').addEventListener('click', clearLog);
     
@@ -368,6 +374,58 @@ async function sendResumeCommand() {
     } catch (e) {
         console.error('發送 RESUME 命令失敗:', e);
         addLog('錯誤', '發送 RESUME 命令失敗: ' + e.message, 'error');
+    }
+}
+
+// 發送 RSP_STATUS 命令
+async function sendRspStatusCommand() {
+    try {
+        const response = await fetch('/api/cmd/rsp_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            addLog('命令', 'RSP_STATUS 命令已發送', 'success');
+        } else {
+            addLog('錯誤', result.error || '發送失敗', 'error');
+            alert('錯誤: ' + (result.error || '發送失敗'));
+        }
+    } catch (e) {
+        console.error('發送 RSP_STATUS 命令失敗:', e);
+        addLog('錯誤', '發送 RSP_STATUS 命令失敗: ' + e.message, 'error');
+    }
+}
+
+// 發送自訂命令
+async function sendUserCommand() {
+    const commandType = document.getElementById('user-command-input').value.trim();
+    
+    if (!commandType) {
+        alert('請輸入命令類型');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/cmd/user_command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: commandType })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            addLog('命令', `自訂命令已發送 (type: ${commandType})`, 'success');
+        } else {
+            addLog('錯誤', result.error || '發送失敗', 'error');
+            alert('錯誤: ' + (result.error || '發送失敗'));
+        }
+    } catch (e) {
+        console.error('發送自訂命令失敗:', e);
+        addLog('錯誤', '發送自訂命令失敗: ' + e.message, 'error');
     }
 }
 

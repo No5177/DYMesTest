@@ -1,5 +1,111 @@
 # 更新日誌
 
+## 2025-12-29 v1.0.3 - 新增 RSP_STATUS 和自訂命令功能
+
+### 新增功能
+
+#### 1. RSP_STATUS 命令
+- 新增 RSP_STATUS 按鈕（紫色，圖示：📊）
+- 可向 TPT 發送狀態請求命令
+- 命令格式：
+  ```json
+  {
+    "type": "RSP_STATUS",
+    "timestamp": "2025-12-29T15:35:00+08:00",
+    "msg_id": "20251229153500",
+    "work_station_name": "TPT-001"
+  }
+  ```
+
+#### 2. 自訂命令 (User Command)
+- 新增自訂命令輸入區塊
+- 使用者可輸入任意命令類型
+- 系統自動產生 timestamp 和 msg_id
+- 命令格式：
+  ```json
+  {
+    "type": "使用者輸入的類型",
+    "timestamp": "2025-12-29T15:35:00+08:00",
+    "msg_id": "20251229153500"
+  }
+  ```
+
+### 修改檔案
+
+#### 前端
+1. **static/index.html**
+   - 在「其他命令」區塊新增 RSP_STATUS 按鈕
+   - 新增「自訂命令」區塊，包含輸入框和發送按鈕
+
+2. **static/script.js**
+   - 新增 `sendRspStatusCommand()` 函數
+   - 新增 `sendUserCommand()` 函數
+   - 更新 `initEventListeners()` 註冊新按鈕事件
+
+3. **static/style.css**
+   - 新增 `.btn-info` 樣式（紫色，用於 RSP_STATUS）
+   - 新增 `.btn-custom` 樣式（青綠色，用於自訂命令）
+
+#### 後端
+4. **core/server_http.go**
+   - 新增 `/api/cmd/rsp_status` API 端點
+   - 新增 `/api/cmd/user_command` API 端點
+   - 新增 `handleRspStatusCommand()` 處理函數
+   - 新增 `handleUserCommand()` 處理函數
+   - 新增 `UserCommandRequest` 結構
+
+5. **core/state_manager.go**
+   - 新增 `SendRspStatus()` 方法
+   - 新增 `SendUserCommand()` 方法
+   - 兩個方法都包含連線狀態檢查
+   - 自動廣播命令到 WebSocket 前端
+
+### 功能特點
+
+✅ **連線檢查**: 發送命令前自動檢查 TPT 連線狀態  
+✅ **輸入驗證**: 自訂命令的 type 欄位必填  
+✅ **自動時間戳記**: 使用 ISO 8601 格式（+08:00 時區）  
+✅ **自動訊息 ID**: 系統自動產生唯一的訊息 ID  
+✅ **即時 Log**: 所有命令都會顯示在通訊 Log 中  
+✅ **錯誤處理**: 完整的錯誤訊息提示  
+
+### 使用方式
+
+#### RSP_STATUS 命令
+1. 確認 TPT 已連線
+2. 點擊「📊 RSP_STATUS」按鈕
+3. 系統自動發送命令並顯示在 Log 中
+
+#### 自訂命令
+1. 在輸入框中輸入命令類型（例如：`aaa`）
+2. 點擊「📤 發送自訂命令」按鈕
+3. 系統發送命令並顯示在 Log 中
+
+### API 端點
+
+- **RSP_STATUS**: `POST /api/cmd/rsp_status`
+  - Request: 無需 body
+  - Response: `{"status": "ok"}` 或錯誤訊息
+
+- **自訂命令**: `POST /api/cmd/user_command`
+  - Request: `{"type": "命令類型"}`
+  - Response: `{"status": "ok"}` 或錯誤訊息
+
+### 測試建議
+
+1. 測試 RSP_STATUS 命令發送
+2. 測試自訂命令發送（例如：`aaa`、`TEST_COMMAND`）
+3. 測試空白輸入驗證
+4. 測試未連線時的錯誤處理
+5. 檢查通訊 Log 是否正確顯示命令
+
+### 相關文件
+
+- `新功能說明.md` - 詳細功能說明
+- `快速測試指南.md` - 測試步驟和預期結果
+
+---
+
 ## 2025-12-01 v2 - 簡化訊息格式
 
 ### 重大變更
